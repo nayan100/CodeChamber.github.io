@@ -1,0 +1,15 @@
+{
+    "name": "codechamber-ai-core",
+    "version": "1.0.0",
+    "description": "MCP internal automation layer for CodeChamber",
+    "type": "module",
+    "scripts": {
+        "start": "node --experimental-strip-types index.ts",
+        "dev": "node --watch --experimental-strip-types index.ts"
+    },
+    "dependencies": {
+        "@modelcontextprotocol/sdk": "^1.0.1",
+        "@supabase/supabase-js": "^2.45.6",
+        "dotenv": "^16.4.7"
+    }
+}
