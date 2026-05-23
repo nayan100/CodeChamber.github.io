@@ -175,32 +175,39 @@ export async function deleteBlogPost(id: string) {
 export async function getBlogPosts(onlyPublished: boolean = false) {
   try {
     let query = supabaseAdmin.from('blog_posts').select('*').order('created_at', { ascending: false })
-    
     if (onlyPublished) {
       query = query.eq('published', true)
     }
+    const { data: posts, error: fetchError } = await query
 
-    const { data, error } = await query
-    if (error) {
-      console.error('getBlogPosts error:', error)
-      throw new Error(error.message)
+    if (fetchError) {
+      console.error('getBlogPosts error:', fetchError)
+      return [] as BlogPost[]
     }
-    return data as BlogPost[]
+    return (posts || []) as BlogPost[]
   } catch (err: any) {
     console.error('getBlogPosts exception:', err)
-    throw err
+    return [] as BlogPost[]
   }
 }
 
 export async function getBlogPostBySlug(slug: string) {
-  const { data, error } = await supabaseAdmin
-    .from('blog_posts')
-    .select('*')
-    .eq('slug', slug)
-    .single()
-  
-  if (error) return null
-  return data as BlogPost
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('blog_posts')
+      .select('*')
+      .eq('slug', slug)
+      .single()
+    
+    if (error) {
+      console.error('getBlogPostBySlug error:', error)
+      return null
+    }
+    return data as BlogPost
+  } catch (err: any) {
+    console.error('getBlogPostBySlug exception:', err)
+    return null
+  }
 }
 
 // --- MESSAGES ---

@@ -1,12 +1,19 @@
 import Navbar from '@/components/public/Navbar'
 import Footer from '@/components/public/Footer'
-import { getBlogPostBySlug } from '@/lib/actions'
+import { getBlogPostBySlug, getBlogPosts } from '@/lib/actions'
 import { notFound } from 'next/navigation'
 import { Calendar, Clock, Tag, User, ArrowLeft } from 'lucide-react'
 import Link from 'next/link'
 
 interface PageProps {
   params: Promise<{ slug: string }>
+}
+
+export async function generateStaticParams() {
+  const posts = await getBlogPosts(true)
+  return posts.map((post) => ({
+    slug: post.slug,
+  }))
 }
 
 export default async function BlogPostPage({ params }: PageProps) {

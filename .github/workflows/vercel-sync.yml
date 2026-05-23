@@ -1,0 +1,32 @@
+name: Sync Environment to Vercel
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.env.vercel' # Trigger only when we explicitly update the sync file
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Install Vercel CLI
+        run: npm install --global vercel@latest
+
+      - name: Sync Admin Hash to Vercel
+        run: |
+          vercel env rm ADMIN_PASSWORD_HASH production -y --token=${{ secrets.VERCEL_TOKEN }} || true
+          echo -n "$NEW_HASH" | vercel env add ADMIN_PASSWORD_HASH production --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          NEW_HASH: ${{ secrets.ADMIN_PASSWORD_HASH }}
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+
+      - name: Trigger Redeploy
+        run: vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        env:
+          VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+          VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
